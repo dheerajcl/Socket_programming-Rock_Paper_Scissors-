@@ -33,7 +33,7 @@ class Button:
             return False
 
 
-def redrawWindow(win, game, p):
+def redrawWindow(win, game, p, my_score, opponent_score):
     win.fill((128,128,128))
 
     if not(game.connected()):
@@ -47,6 +47,19 @@ def redrawWindow(win, game, p):
 
         text = font.render("Opponents", 1, (0, 255, 255))
         win.blit(text, (380, 200))
+
+        if p == 0:  
+            my_text = "Your Score:"
+            opponent_text = "Opponent's Score:"
+        else:  
+            my_text = "Opponent's Score:"
+            opponent_text = "Your Score:"
+
+        font_score = pygame.font.SysFont("comicsans", 40)
+        my_score_text = font_score.render(f"{my_text} {my_score}", 1, (0, 255, 0))
+        opponent_score_text = font_score.render(f"{opponent_text} {opponent_score}", 1, (0, 0, 0))
+        win.blit(my_score_text, (20, 10))
+        win.blit(opponent_score_text, (400, 10))
 
         move1 = game.get_player_move(0)
         move2 = game.get_player_move(1)
@@ -81,6 +94,7 @@ def redrawWindow(win, game, p):
     pygame.display.update()
 
 
+
 btns = [Button("Rock", 50, 500, (0,0,0)), Button("Scissors", 250, 500, (255,0,0)), Button("Paper", 450, 500, (0,255,0))]
 def main():
     run = True
@@ -88,6 +102,9 @@ def main():
     n = Network()
     player = int(n.getP())
     print("You are player", player)
+
+    my_score = 0  
+    opponent_score = 0  
 
     while run:
         clock.tick(60)
@@ -99,7 +116,14 @@ def main():
             break
 
         if game.bothWent():
-            redrawWindow(win, game, player)
+            winner = game.winner()
+            # Update scores based on winner
+            if winner == 0:
+                my_score += 1
+            elif winner == 1:
+                opponent_score += 1
+
+            redrawWindow(win, game, player, my_score, opponent_score)
             pygame.time.delay(500)
             try:
                 game = n.send("reset")
@@ -136,7 +160,7 @@ def main():
                             if not game.p2Went:
                                 n.send(btn.text)
 
-        redrawWindow(win, game, player)
+        redrawWindow(win, game, player, my_score, opponent_score)
 
 def menu_screen():
     run = True
