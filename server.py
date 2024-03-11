@@ -4,14 +4,13 @@ from _thread import *
 import pickle
 from game import Game
 
-server = "127.0.0.1"#"192.168.26.102"
+server = "127.0.0.1"
 port = 5555
 
 context = ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
 context.load_cert_chain(certfile="server_cert.pem", keyfile="server_key.pem")
 
 s = context.wrap_socket(socket.socket(socket.AF_INET, socket.SOCK_STREAM), server_side=True)
-
 
 try:
     s.bind((server, port))
